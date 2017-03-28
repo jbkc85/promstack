@@ -19,7 +19,11 @@ As mentioned before, PromStack is a collection of software intended to provide a
 
 ### A quick look at the Stack
 
-<center>![PromStack Overview Image](https://cloud.githubusercontent.com/assets/215878/24385277/e3831784-132e-11e7-87ee-bf7448ca591c.png)</center>
+<center>
+
+![](https://cloud.githubusercontent.com/assets/215878/24385277/e3831784-132e-11e7-87ee-bf7448ca591c.png)
+
+</center>
 
 #### Monitoring with Prometheus
 
