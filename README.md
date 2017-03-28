@@ -47,7 +47,7 @@ An experimental piece of the PromStack, [Alerta](http://alerta.io) Python based 
 
 #### Tools
 
-**[PromstackCTL](promstackctl/)**: GoLang utility to add pre-defined exporters (configured in Consul KV store) to machines in your cluster.
+**[PromstackCTL](https://github.com/jbkc85/promstackctl)**: GoLang utility to add pre-defined exporters (configured in Consul KV store) to machines in your cluster.
 
 ### More Information
 
