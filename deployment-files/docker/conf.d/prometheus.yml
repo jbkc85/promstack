@@ -1,0 +1,66 @@
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  # scrape_timeout is set to the global default (10s).
+  scrape_timeout: 10s
+  # Attach these extra labels to all timeseries collected by this Prometheus
+  # instance.
+  external_labels:
+    environment: Development
+
+rule_files:
+  - '/opt/promstack/conf.d/rules/node-exporter/*.rules'
+  - '/opt/promstack/conf.d/rules/cadvisor/*.rules'
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries
+  # scraped from this config.
+
+# Development Monitoring Starts Here
+# - Any Monitoring Below these comments will require development network to access
+
+  # consul job isn't SD via Consul as we want this to be static, independent
+  # of any external service to Prometheus
+  # this means:
+  #  - no DNS
+  #  - no Consul
+# Coming Soon...
+#  - job_name: consul
+#    scrape_interval: 30s
+#    scrape_timeout: 5s
+#
+#    static_configs:
+#    - targets: ['consul:9107']
+#      labels:
+#        hostname: consul
+#        port: 9107
+
+  - job_name: ConsulServerServiceDiscovery
+    scrape_interval: 45s
+    scrape_timeout: 5s
+
+    consul_sd_configs:
+    - server: consul:8500
+      datacenter: promstack
+      services: ['node-exporter','cadvisor','prometheus','alertmanager','push-gateway']
+
+    relabel_configs:
+    - target_label:  'discovery'
+      replacement:   'consul'
+    - source_labels: ['__meta_consul_service']
+      target_label:  'job'
+      replacement:   '$1'
+    - source_labels: ['__meta_consul_node']
+      target_label:  'hostname'
+      replacement:   '$1'
+    - source_labels: ['__meta_consul_node']
+      target_label:  'instance'
+      replacement:   '$1'
+    - source_labels: ['__meta_consul_service_port']
+      target_label:  'port'
+      replacement:   '$1'
+    - source_labels: ['__meta_consul_tags']
+      regex:         ',protocol:(\w),'
+      target_label:  'protocol'
+      replacement:   '$1'

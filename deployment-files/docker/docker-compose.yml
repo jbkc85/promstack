@@ -1,0 +1,86 @@
+version: '2.1'
+
+volumes:
+  promstack-data:
+
+services:
+  # Consul Services
+  consul:
+    hostname: consul.local
+    image: consul
+    ports:
+      - "8500:8500"
+      - "8600:8600"
+      - "8600/udp:8600/udp"
+    volumes:
+      - promstack-data:/consul/data
+    command: agent -dev -client 0.0.0.0 -dc promstack
+  # Metric Services
+  node-exporter:
+    hostname: node-exporter.local
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
+  # Prometheus Alerting & Monitoring
+  alertmanager:
+    hostname: alertmanager.local
+    image: prom/alertmanager
+    volumes:
+      - ./conf.d:/opt/promstack
+    ports:
+      - "9093:9093"
+    command:
+      - '-config.file=/opt/promstack/alertmanager.yml'
+  push-gateway:
+    hostname: push-gateway.local
+    image: prom/pushgateway
+    ports:
+    - "9091:9091"
+  prometheus:
+    hostname: prometheus.local
+    image: prom/prometheus
+    volumes:
+    - ./conf.d:/opt/promstack
+    - promstack-data:/prometheus/data
+    depends_on:
+    - alertmanager
+    - consul
+    ports:
+      - "9090:9090"
+    command:
+      - '-config.file=/opt/promstack/prometheus.yml'
+      - '-alertmanager.url=http://alertmanager:9093'
+  # Grafana Graphs/Dashboards/Visualization
+  grafana:
+    hostname: grafana.local
+    environment:
+      - "GF_SECURITY_ADMIN_PASSWORD=password"
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - promstack-data:/var/lib/grafana
+      - ./conf.d/grafana.ini:/etc/grafana/grafana.ini
+      - ./conf.d/grafana-dashboards:/opt/promstack/grafana-dashboards
+  # Alerta Logging (AM doesn't keep historic logging)
+  mongodb:
+    hostname: mongodb.local
+    image: mongo
+  alerta:
+    hostname: alerta.local
+    image: alerta/alerta-web
+    ports:
+      - "8181:80"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/monitoring
+      - CORS_ORIGINS=*
+      - DEBUG=True
+      - ADMIN_USERS=user@more.net
+    restart: always
+
+networks:
+  default:
+    external:
+      name: promstack-net

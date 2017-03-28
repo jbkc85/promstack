@@ -1,0 +1,10 @@
+ALERT exporterDown
+  IF up{job=~'node-exporter'} == 0
+  FOR 2m
+  LABELS {
+    severity="critical",
+  }
+  ANNOTATIONS {
+    summary="Instance {{$labels.instance}} node exporter is unresponsive",
+    description="{{$labels.instance}} node exporter has been unreachable or unresponsive for more than 2 minutes.",
+  }

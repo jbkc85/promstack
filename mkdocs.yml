@@ -1,0 +1,9 @@
+site_name: PromStack Documentation
+theme: readthedocs
+repo_name: GitHub
+repo_url: http://github.com/jbkc85/promstack
+pages:
+- Home: index.md
+- Deployments:
+    - Overview: deployments/Overview.md
+    - Docker: deployments/Docker.md
