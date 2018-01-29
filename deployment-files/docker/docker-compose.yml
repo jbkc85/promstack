@@ -10,8 +10,8 @@ services:
     image: consul
     ports:
       - "8500:8500"
-      - "8600:8600"
-      - "8600/udp:8600/udp"
+      - 8600
+      - 8600/udp
     volumes:
       - promstack-data:/consul/data
     command: agent -dev -client 0.0.0.0 -dc promstack
@@ -62,25 +62,3 @@ services:
       - promstack-data:/var/lib/grafana
       - ./conf.d/grafana.ini:/etc/grafana/grafana.ini
       - ./conf.d/grafana-dashboards:/opt/promstack/grafana-dashboards
-  # Alerta Logging (AM doesn't keep historic logging)
-  mongodb:
-    hostname: mongodb.local
-    image: mongo
-  alerta:
-    hostname: alerta.local
-    image: alerta/alerta-web
-    ports:
-      - "8181:80"
-    depends_on:
-      - mongodb
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/monitoring
-      - CORS_ORIGINS=*
-      - DEBUG=True
-      - ADMIN_USERS=user@more.net
-    restart: always
-
-networks:
-  default:
-    external:
-      name: promstack-net
