@@ -29,7 +29,7 @@ If you are looking at this page, [Prometheus](https://prometheus.io) should be p
 
 #### Service Discovery with Consul
 
-[Consul](https://www.consul.io/intro/index.html) is a lot of things.  However in PromStack, I am utilizing Consul for its Service Discovery via the Consul Catalog for Nodes and Services as well as the DNS provided from the Catalog functionality.  I am also utilizing the Key Value store for the promstackctl tool.
+[Consul](https://www.consul.io/intro/index.html) is a lot of things.  However in PromStack, I am utilizing Consul for its Service Discovery via the Consul Catalog for Nodes and Services as well as the DNS provided from the Catalog functionality.  One issue with Consul I noticed during the BETA process was that when Consul went down, the rest of my Prometheus monitoring would follow.  I believe this was due to the `evaluation_interval`, and wanted to make a change to avoid a single point of failure in my monitoring solution.  Therefore for non-container entities (which I need to heavily monitor at this time), I started using consul-template to write out simple files and use `file_sd_config`.  This way, changes in deployments propagate out to Prometheus, but in such a way where Consul can fail without impact the rest of the PromStack ecosystem.
 
 #### Alerting with AlertManager
 
@@ -53,11 +53,7 @@ If you are looking at this page, [Prometheus](https://prometheus.io) should be p
 
 ### More Information
 
-For more information about the layout of the file structure, communication between the software in the Stack, please read more here[*under construction*].
-
-## <a name="getting-started"></a>Getting Started
-
-To get started, we first need to deploy the essential tools of PromStack.  There are multiple ways to deploy the PromStack including a single monolithic server with all software running, as well as pieces of the stack distributed across a clustered environment.  There is no *ideal or best-practice* that I know of at this time, so I will just provide the scenarios I have deployed in.  [Here is an overview of deployment scenarios I have had worked out](docs/deployments/Overview.md).
+As PromStack comes out of BETA, more documentation will become available.  Otherwise, please feel free to email me at jbkc85 at gmail.com with any questions, or drop an issue/comment in the github repo!
 
 ## <a name="status-and-contributing"></a>Status and Contributing
 
